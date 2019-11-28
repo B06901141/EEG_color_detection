@@ -1,0 +1,6 @@
+0-10 rest
+10-20 color1
+20-25 rest
+25-35 color2
+35-40 rest
+40-50 color3
