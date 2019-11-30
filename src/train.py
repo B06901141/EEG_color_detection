@@ -12,8 +12,8 @@ if __name__ == "__main__":
     data = normalize(data)
     data = splitColor(data)
     data_train, data_test = splitData(data)
-    data_train = cropData(data_train)
-    data_test = cropData(data_test)
+    data_train = cropData(data_train, cropSize = 512, step = 256)
+    data_test = cropData(data_test, cropSize = 512, step = 256)
     
     x_train, y_train, index2color = permuteData(data_train)
     x_test, y_test, _ = permuteData(data_test)
