@@ -24,37 +24,36 @@ if __name__ == "__main__":
     input_ = keras.layers.Input(shape=(512, 4))
     output = input_
 
-    output = keras.layers.Conv1D(64, 3, strides=1)(output)
+    output = keras.layers.Conv1D(64, 10, strides=1)(output)
     output = keras.layers.LeakyReLU(alpha=0.3)(output)
-    output = keras.layers.Conv1D(64, 3, strides=1)(output)
+    output = keras.layers.Conv1D(64, 10, strides=1)(output)
     output = keras.layers.LeakyReLU(alpha=0.3)(output)
     output = keras.layers.MaxPooling1D()(output)
     
-    output = keras.layers.Conv1D(128, 3, strides=1)(output)
+    output = keras.layers.Conv1D(128, 10, strides=1)(output)
     output = keras.layers.LeakyReLU(alpha=0.3)(output)
-    output = keras.layers.Conv1D(128, 3, strides=1)(output)
+    output = keras.layers.Conv1D(128, 10, strides=1)(output)
     output = keras.layers.LeakyReLU(alpha=0.3)(output)
     output = keras.layers.MaxPooling1D()(output)
 
-    output = keras.layers.Conv1D(256, 3, strides=1)(output)
+    output = keras.layers.Conv1D(256, 10, strides=1)(output)
     output = keras.layers.LeakyReLU(alpha=0.3)(output)
-    output = keras.layers.Conv1D(256, 3, strides=1)(output)
+    output = keras.layers.Conv1D(256, 10, strides=1)(output)
     output = keras.layers.LeakyReLU(alpha=0.3)(output)
     output = keras.layers.MaxPooling1D()(output)
+    output = keras.layers.TimeDistributed(keras.layers.Dense(5, kernel_regularizer=keras.regularizers.l1_l2(l1=0.01, l2=0.01)))(output)
 
 
     output = keras.layers.Flatten()(output)
-    output = keras.layers.Dense(500)(output)
+    output = keras.layers.Dense(100, kernel_regularizer=keras.regularizers.l1_l2(l1=0.01, l2=0.01))(output)
     output = keras.layers.LeakyReLU(alpha=0.3)(output)
-    output = keras.layers.Dense(100)(output)
+    output = keras.layers.Dense(50)(output)
     output = keras.layers.LeakyReLU(alpha=0.3)(output)
     output = keras.layers.Dense(classNum, activation = "softmax")(output)
 
     
     model = keras.models.Model(input_, output)
     model.summary()
-
-
 
     checkpoint = keras.callbacks.ModelCheckpoint("../model/best.hdf5", monitor='val_loss', save_best_only=True, mode='min')
     #early_stopping = keras.callbacks.EarlyStopping(monitor='val_loss', min_delta=0, patience=10, mode='min')
