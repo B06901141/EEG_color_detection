@@ -90,7 +90,7 @@ def permuteData(data, color = "rgb", useDummy = False):
         y.extend([index]*data[c].shape[0])
 
     x = np.array(x, dtype=np.float32)
-    y = np.array(y, dtype=np.float32)
+    y = np.array(y, dtype=np.int32)
 
     p = np.random.permutation(x.shape[0])
     x = x[p]
