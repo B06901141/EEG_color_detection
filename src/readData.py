@@ -104,10 +104,10 @@ if __name__ == '__main__':
     data = splitColor(data)
     data = cropData(data)
     data_train, data_test = splitData(data)
+    x_train, y_train, index2color = permuteData(data_train)
     print(data_train.keys())
     for wave in data_train.values():
         print(wave.shape) #(datanum, time, channel)
-    x_train, y_train, index2color = permuteData(data_train)
     print(x_train.shape)
     print(y_train.shape)
     print(y_train)
