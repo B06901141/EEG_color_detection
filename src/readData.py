@@ -76,6 +76,27 @@ def cropData(data, cropSize = 512, step = 256):
             cropped.extend(data[color][:,time:time+cropSize,:])
         data[color] = np.array(cropped, dtype=np.float32)
     return data
+def permuteData(data, color = "rgb", useDummy = False):
+    color = [*color]
+    if useDummy:
+        color.append("dummy")
+    index2color = {i:j for i,j in enumerate(color)}
+    color2index = {j:i for i,j in index2color.items()}
+    x = []
+    y = []
+    for c in color:
+        index = color2index[c]
+        x.extend(data[c])
+        y.extend([index]*data[c].shape[0])
+
+    x = np.array(x, dtype=np.float32)
+    y = np.array(y, dtype=np.float32)
+
+    p = np.random.permutation(x.shape[0])
+    x = x[p]
+    y = y[p]
+
+    return x, y , index2color
 
 if __name__ == '__main__':
     data = readDataSet("../dataset")
@@ -86,4 +107,7 @@ if __name__ == '__main__':
     print(data_train.keys())
     for wave in data_train.values():
         print(wave.shape) #(datanum, time, channel)
-
+    x_train, y_train, index2color = permuteData(data_train)
+    print(x_train.shape)
+    print(y_train.shape)
+    print(y_train)
