@@ -102,8 +102,9 @@ if __name__ == '__main__':
     data = readDataSet("../dataset")
     data = normalize(data)
     data = splitColor(data)
-    data = cropData(data)
     data_train, data_test = splitData(data)
+    data_train = cropData(data_train)
+    data_test = cropData(data_test)
     x_train, y_train, index2color = permuteData(data_train)
     print(data_train.keys())
     for wave in data_train.values():

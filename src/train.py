@@ -11,8 +11,10 @@ if __name__ == "__main__":
     data = readDataSet("../dataset")
     data = normalize(data)
     data = splitColor(data)
-    data = cropData(data)
     data_train, data_test = splitData(data)
+    data_train = cropData(data_train)
+    data_test = cropData(data_test)
+    
     x_train, y_train, index2color = permuteData(data_train)
     x_test, y_test, _ = permuteData(data_test)
     classNum = len(index2color)
@@ -63,4 +65,4 @@ if __name__ == "__main__":
 
 
     model.compile(optimizer="adam", loss=keras.losses.sparse_categorical_crossentropy, metrics=["accuracy"])
-    model.fit(x_train,y_train,validation_split=0.1, callbacks=[checkpoint], epochs = 20000)
+    model.fit(x_train,y_train,validation_split=0.5, callbacks=[checkpoint], epochs = 20000)
