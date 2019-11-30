@@ -1,5 +1,6 @@
 import numpy as np
 import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 from readData import *
 
@@ -21,7 +22,9 @@ if __name__ == "__main__":
     x_test = x_test[..., 1:]
 
     input_ = keras.layers.Input(shape=(512, 4))
-    output = keras.layers.Conv1D(64, 3, strides=1)(input_)
+    output = input_
+
+    output = keras.layers.Conv1D(64, 3, strides=1)(output)
     output = keras.layers.LeakyReLU(alpha=0.3)(output)
     output = keras.layers.Conv1D(64, 3, strides=1)(output)
     output = keras.layers.LeakyReLU(alpha=0.3)(output)
@@ -39,6 +42,7 @@ if __name__ == "__main__":
     output = keras.layers.LeakyReLU(alpha=0.3)(output)
     output = keras.layers.MaxPooling1D()(output)
 
+
     output = keras.layers.Flatten()(output)
     output = keras.layers.Dense(500)(output)
     output = keras.layers.LeakyReLU(alpha=0.3)(output)
@@ -51,7 +55,14 @@ if __name__ == "__main__":
     model.summary()
 
 
+
     checkpoint = keras.callbacks.ModelCheckpoint("../model/best.hdf5", monitor='val_loss', save_best_only=True, mode='min')
-    early_stopping = keras.callbacks.EarlyStopping(monitor='val_loss', min_delta=0, patience=10, mode='min')
+    #early_stopping = keras.callbacks.EarlyStopping(monitor='val_loss', min_delta=0, patience=10, mode='min')
+    
+    pretrain_y = np.ones((y_train.shape[0], classNum))/classNum
+    model.compile(optimizer="adam", loss=keras.losses.categorical_crossentropy, metrics=["mse"])
+    model.fit(x_train,pretrain_y,validation_split=0.1, epochs = 10)
+
+
     model.compile(optimizer="adam", loss=keras.losses.sparse_categorical_crossentropy, metrics=["accuracy"])
-    model.fit(x_train,y_train,validation_split=0.05, callbacks=[checkpoint, early_stopping])
+    model.fit(x_train,y_train,validation_split=0.1, callbacks=[checkpoint], epochs = 20000)
