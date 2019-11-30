@@ -12,9 +12,9 @@ if __name__ == "__main__":
     data = normalize(data)
     data = splitColor(data)
     data_train, data_test = splitData(data)
-    data_train = cropData(data_train, cropSize = 512, step = 256)
-    data_test = cropData(data_test, cropSize = 512, step = 256)
-    
+    data_train = cropData(data_train, cropSize = 512, step = 512)
+    data_test = cropData(data_test, cropSize = 512, step = 512)
+
     x_train, y_train, index2color = permuteData(data_train)
     x_test, y_test, _ = permuteData(data_test)
     classNum = len(index2color)
@@ -42,7 +42,7 @@ if __name__ == "__main__":
     output = keras.layers.Conv1D(256, 10, strides=1)(output)
     output = keras.layers.LeakyReLU(alpha=0.3)(output)
     output = keras.layers.MaxPooling1D()(output)
-    output = keras.layers.TimeDistributed(keras.layers.Dense(5, kernel_regularizer=keras.regularizers.l1_l2(l1=0.01, l2=0.01)))(output)
+    output = keras.layers.TimeDistributed(keras.layers.Dense(100, kernel_regularizer=keras.regularizers.l1_l2(l1=0.01, l2=0.01)))(output)
 
 
     output = keras.layers.Flatten()(output)
