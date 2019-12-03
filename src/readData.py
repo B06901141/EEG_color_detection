@@ -58,7 +58,7 @@ def splitColor(data, cmap = "rgb"):
     index_end = [time2index(i) for i in time_end]
     for color, waveform in data.items():
         for i in range(3):
-            d[cmap[i]].extend([wave[index_start[i]:index_end[i]] for wave in waveform])
+            d[color[i]].extend([wave[index_start[i]:index_end[i]] for wave in waveform])
         i = -1
         d["dummy"].extend([wave[index_start[i]:index_end[i]] for wave in waveform])
     for i in d:
