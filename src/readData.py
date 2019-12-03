@@ -42,12 +42,12 @@ def readDataSet(dataPath, cmap ="rgb"):
     return data
 def normalize(data):
     print("Normalizing data...")
-    for waveform in tqdm.tqdm(data.values(), ncols = 70):
-        for i in range(len(waveform)):
-            base = waveform[i][:time2index(9.5)]
+    for color in tqdm.tqdm(data, ncols = 70):
+        for i in range(len(data[color])):
+            base = data[color][i][:time2index(9.5)]
             mean = base.mean(axis = 0)
             std = base.std(axis = 0)
-            waveform[i] = (waveform[i] - mean) / std
+            data[color][i] = (data[color][i] - mean) / std
     return data
 def splitColor(data, cmap = "rgb"):
     d = {i:[] for i in cmap}
@@ -97,7 +97,16 @@ def permuteData(data, color = "rgb", useDummy = False):
     y = y[p]
 
     return x, y , index2color
-
+def eigenSplit(data):
+    def eigenSplitSingle(x):
+        #x in shape(time, channel)
+        cov = np.cov(x.T)
+        w,v = np.linalg.eigh(cov)
+        x = np.matmul(x, v)
+        x /= np.std(x,axis = 0)
+        return x
+    #data in shape(datanum, time, channel)
+    return np.array([eigenSplitSingle(i) for i in data])
 if __name__ == '__main__':
     data = readDataSet("../dataset")
     data = normalize(data)
@@ -106,9 +115,15 @@ if __name__ == '__main__':
     data_train = cropData(data_train)
     data_test = cropData(data_test)
     x_train, y_train, index2color = permuteData(data_train)
+    x_train_indep = eigenSplit(x_train)
     print(data_train.keys())
     for wave in data_train.values():
         print(wave.shape) #(datanum, time, channel)
     print(x_train.shape)
-    print(y_train.shape)
+    print(y_train.shape) #(datanum, time, channel)
     print(y_train)
+
+    print("-----------------")
+    print(x_train_indep.shape)
+    print(np.cov(x_train_indep[0].T))
+

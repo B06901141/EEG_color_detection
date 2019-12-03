@@ -27,9 +27,13 @@ if __name__ == "__main__":
     x_val = x_val[..., 1:]
     x_test = x_test[..., 1:]
 
+    x_train = eigenSplit(x_train)
+    x_val = eigenSplit(x_val)
+    x_test = eigenSplit(x_test)
+
     input_ = keras.layers.Input(shape=(512, 4))
     output = input_
-    
+    """
     output = keras.layers.Conv1D(3, 10, strides=1)(output)
     output = keras.layers.LeakyReLU(alpha=0.3)(output)
     #output = keras.layers.Dropout(0.8)(output)
@@ -49,16 +53,17 @@ if __name__ == "__main__":
     output = keras.layers.LeakyReLU(alpha=0.3)(output)
     output = keras.layers.MaxPooling1D()(output)
     #output = keras.layers.TimeDistributed(keras.layers.Dense(100))(output)
-    
-    #output = keras.layers.CuDNNLSTM(5, return_sequences=True)(output)
-    #output = keras.layers.CuDNNLSTM(5, return_sequences=True)(output)
-    #output = keras.layers.CuDNNLSTM(5, return_sequences=True)(output)
-    output = keras.layers.CuDNNLSTM(3, return_sequences=False)(output)
+    """
+    #output = keras.layers.Conv1D(50, 10, strides=1)(output)
+    output = keras.layers.CuDNNLSTM(50, return_sequences=True)(output)
+    output = keras.layers.CuDNNLSTM(50, return_sequences=True)(output)
+    output = keras.layers.CuDNNLSTM(50, return_sequences=True)(output)
+    output = keras.layers.CuDNNLSTM(50, return_sequences=False)(output)
     
     #output = keras.layers.Flatten()(output)
-    output = keras.layers.Dense(3)(output)
+    output = keras.layers.Dense(50)(output)
     output = keras.layers.LeakyReLU(alpha=0.3)(output)
-    output = keras.layers.Dense(3)(output)
+    output = keras.layers.Dense(50)(output)
     output = keras.layers.LeakyReLU(alpha=0.3)(output)
     output = keras.layers.Dense(classNum, activation = "softmax")(output)
 
@@ -75,4 +80,4 @@ if __name__ == "__main__":
     
     opt = keras.optimizers.RMSprop(0.001, clipvalue=0.5)
     model.compile(optimizer=opt, loss=keras.losses.sparse_categorical_crossentropy, metrics=["accuracy"])
-    model.fit(x_train,y_train,validation_data = (x_val,y_val), callbacks=[checkpoint], epochs = 30)
+    model.fit(x_train,y_train,validation_data = (x_val,y_val), callbacks=[checkpoint], epochs = 300)
