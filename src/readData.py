@@ -52,8 +52,8 @@ def normalize(data):
 def splitColor(data, cmap = "rgb"):
     d = {i:[] for i in cmap}
     d["dummy"] = []
-    time_start = [10.5,25.5,40.5,0.5]
-    time_end = [19.5,34.5,49.5,9.5]
+    time_start = np.array([10,25,40,0]) + 1
+    time_end = np.array([20,35,50,10]) - 1
     index_start = [time2index(i) for i in time_start]
     index_end = [time2index(i) for i in time_end]
     for color, waveform in data.items():
@@ -64,7 +64,7 @@ def splitColor(data, cmap = "rgb"):
     for i in d:
         d[i] = np.array(d[i], dtype=np.float32)
     return d
-def splitData(data, testNum = 1):
+def splitData(data, testNum = 6):
     test_data = {i:j[-testNum:, ...] for i,j in data.items()}
     train_data = {i:j[:-testNum, ...] for i,j in data.items()}
     return train_data, test_data
