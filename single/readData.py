@@ -28,7 +28,7 @@ def readDataSet(dataPath, cmap ="rgb"):
 
     dataFolder = [os.path.join(dataPath, i) for i in os.listdir(dataPath) if i != ".git"]
     dataFolder = [i for i in dataFolder if os.path.isdir(i)]
-    dataFolder = dataFolder[:1]
+    dataFolder = [dataFolder[6]]
     matFiles = [[j for j in os.listdir(i) if j.split(".")[-1] == "mat"] for i in dataFolder]
 
     print("Reading data...")
