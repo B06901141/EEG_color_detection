@@ -22,7 +22,7 @@ array(['EEG', 'alpha', 'beta', 'delta', 'theta']
 """
 
 time2index = lambda s,f=200: int(s*f)
-def readDataSet(dataPath, cmap ="rgb"):
+def readDataSet(dataPath, cmap ="rgb", index = 0):
     color = ["".join(i) for i in permutations(cmap)]
     data = {i:[] for i in color}
 
