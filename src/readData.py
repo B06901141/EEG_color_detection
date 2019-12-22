@@ -4,6 +4,7 @@ from itertools import permutations
 
 import tqdm
 import scipy.io as sio
+from scipy import signal
 
 """
 mat format
@@ -21,7 +22,9 @@ array(['EEG', 'alpha', 'beta', 'delta', 'theta']
 40-50 color3
 """
 
+psd = lambda arr: np.apply_along_axis(lambda x: signal.periodogram(x, 200)[1], axis=1, arr=arr)
 time2index = lambda s,f=200: int(s*f)
+
 def readDataSet(dataPath, cmap ="rgb"):
     color = ["".join(i) for i in permutations(cmap)]
     data = {i:[] for i in color}
@@ -40,15 +43,9 @@ def readDataSet(dataPath, cmap ="rgb"):
                 continue
             data[colorOrder].append(sio.loadmat(fileName)["data"])
     return data
-def normalize(data):
-    print("Normalizing data...")
-    for color in tqdm.tqdm(data, ncols = 70):
-        for i in range(len(data[color])):
-            base = data[color][i][:time2index(9.5)]
-            mean = base.mean(axis = 0)
-            std = base.std(axis = 0)
-            data[color][i] = (data[color][i] - mean) / std
-    return data
+def filterData(data, filt):
+    prepro = lambda arr, filt: np.apply_along_axis(lambda m: np.convolve(m, filt, mode='valid'), axis=1, arr=arr)
+    return {i:prepro(j, filt) for i, j in data.items()}
 def splitColor(data, cmap = "rgb"):
     d = {i:[] for i in cmap}
     d["dummy"] = []
@@ -107,9 +104,9 @@ def eigenSplit(data):
         return x
     #data in shape(datanum, time, channel)
     return np.array([eigenSplitSingle(i) for i in data])
+
 if __name__ == '__main__':
     data = readDataSet("../dataset")
-    data = normalize(data)
     data = splitColor(data)
     data_train, data_test = splitData(data)
     data_train = cropData(data_train)
