@@ -7,32 +7,15 @@ import tqdm
 
 from sklearn.ensemble import GradientBoostingClassifier
 
-def gen_train_test(dataPath):
-    data = readDataSet("../dataset")
-    data = splitColor(data)
-    data = filterData(data, filt = [1] + [-1/10] * 10)
-
-    data_train, data_test = splitData(data, testNum = 1)
-
-    data_train = cropData(data_train, cropSize = 128, step = 128)
-    data_test = cropData(data_test, cropSize = 128, step = 128)
-
-    x_train, y_train, index2color = permuteData(data_train)
-    x_test, y_test, _ = permuteData(data_test)
-
-    x_train = x_train[...,0]
-    x_test = x_test[...,0]
-
-    x_train = psd(x_train)
-    x_test = psd(x_test)
-
-    classNum = len(index2color)
-    return (x_train, y_train), (x_test, y_test), classNum
-
 if __name__ == '__main__':
     modelPath = "../model"
     os.makedirs(modelPath, exist_ok = True)
     (x_train, y_train), (x_test, y_test), classNum = gen_train_test("../dataset")
+
+    data_num = x_train.shape[0]
+    val = int(data_num * 0.1)
+    x_train = x_train[:-val]
+    y_train = y_train[:-val]
 
     print("Using gradient boosting to train model...")
     for i in tqdm.tqdm(range(1,61), ncols = 70):

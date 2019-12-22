@@ -25,6 +25,28 @@ array(['EEG', 'alpha', 'beta', 'delta', 'theta']
 psd = lambda arr: np.apply_along_axis(lambda x: signal.periodogram(x, 200)[1], axis=1, arr=arr)
 time2index = lambda s,f=200: int(s*f)
 
+def gen_train_test(dataPath):
+    data = readDataSet("../dataset")
+    data = splitColor(data)
+    data = filterData(data, filt = [1] + [-1/10] * 10)
+
+    data_train, data_test = splitData(data, testNum = 1)
+
+    data_train = cropData(data_train, cropSize = 128, step = 128)
+    data_test = cropData(data_test, cropSize = 128, step = 128)
+
+    x_train, y_train, index2color = permuteData(data_train)
+    x_test, y_test, _ = permuteData(data_test)
+
+    x_train = x_train[...,0]
+    x_test = x_test[...,0]
+
+    x_train = psd(x_train)
+    x_test = psd(x_test)
+
+    classNum = len(index2color)
+    return (x_train, y_train), (x_test, y_test), classNum
+
 def readDataSet(dataPath, cmap ="rgb"):
     color = ["".join(i) for i in permutations(cmap)]
     data = {i:[] for i in color}
