@@ -49,4 +49,4 @@ if __name__ == "__main__":
 
     rgb = model.predict(oneHot)
     with open(args.outNpy, "wb") as file1:
-        np.save(file1, PSD)
+        np.save(file1, rgb)
