@@ -6,6 +6,9 @@ import turtle
 import scipy.io as sio
 
 import tqdm
+from PIL import Image
+
+import argparse
 
 def sqeeze(color, waveForm, speed):
     result_color = []
@@ -23,13 +26,18 @@ def generalizeColor(color):
     color[color < 140] = 0
     return color
 if __name__ == '__main__':
-    speed = 20
+    parser = argparse.ArgumentParser()
+    parser.add_argument("inNpy", help = "input path of the NpyFile")
+    args = parser.parse_args()
 
-    with open("../npy/168_rgb.npy", "rb") as file1:
+    speed = 20
+    os.makedirs("log", exist_ok=True)
+    with open(args.inNpy, "rb") as file1:
         color = np.load(file1)
     waveForm = sio.loadmat("../dataset/168/168_rgb.mat")["data"][...,0]
 
     color, waveForm = sqeeze(color, waveForm, speed)
+    color[...,0] *= 0.95
     color[...,1] *= 0.9
     color = np.array(color*255,dtype=np.uint8)
     color[color < 150] = 0
@@ -38,7 +46,7 @@ if __name__ == '__main__':
     time = 0
     totalTime = waveForm.shape[0] * 0.005 * speed
     turtle.setworldcoordinates(llx = -100,urx = 10, lly = -500, ury = 500)
-    turtle.speed(5)
+    turtle.speed(0)
     turtle.colormode(255)
     turtle.penup()
     for i, (wave, c) in enumerate(zip(waveForm, color)):
@@ -50,7 +58,14 @@ if __name__ == '__main__':
             turtle.write("%.4f"%(time))
             turtle.sety(wave*100)
             turtle.pendown()
+            if i != 0:
+                ts = turtle.getscreen()
+                ts.getcanvas().postscript(file="log/%.4f.eps"%time)
+                img = Image.open("log/%.4f.eps"%time)
+                img = img.resize((img.size[0]*2,img.size[1]*2), Image.ANTIALIAS)
+                img.save("log/%.4f.jpg"%time)
         time += 0.005 * speed
         turtle.setpos(i, wave*100)
         turtle.setworldcoordinates(llx = i-100,urx = i+10, lly = -500, ury = 500)
         turtle.pencolor(c)
+
