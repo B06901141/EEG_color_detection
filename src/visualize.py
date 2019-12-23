@@ -37,7 +37,7 @@ if __name__ == '__main__':
     waveForm = sio.loadmat("../dataset/168/168_rgb.mat")["data"][...,0]
 
     color, waveForm = sqeeze(color, waveForm, speed)
-    color[...,0] *= 0.95
+    color[...,0] *= 0.9
     color[...,1] *= 0.9
     color = np.array(color*255,dtype=np.uint8)
     color[color < 150] = 0
